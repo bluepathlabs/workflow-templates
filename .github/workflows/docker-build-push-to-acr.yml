@@ -50,7 +50,7 @@ jobs:
       id: azsecrets
       
     - name: Build the User Service Docker image
-      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
       
     - uses: azure/docker-login@v1
       name: Login to ACR
