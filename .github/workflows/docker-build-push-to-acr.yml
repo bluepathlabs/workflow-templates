@@ -11,8 +11,9 @@ on:
         required: true
         type: string
       image-tag:
-        required: true
+        required: false
         type: string
+        default: ' '
       azure-environment:
         type: string
         default: 'AzureCloud'
@@ -36,6 +37,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set Docker Tag Based on Input or Branch
+      id: dockertagstep
+      run: |
+        if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+          echo "::set-output name=image-tag::main"
+        fi
+
+        if [[ "${{github.base_ref}}" == "develop" || "${{github.ref}}" == "refs/heads/develop" ]]; then
+          echo "::set-output name=image-tag::develop"
+        fi
+
+        if [[ "${{github.base_ref}}" != "develop" && "${{github.ref}}" != "refs/heads/develop" && "${{github.base_ref}}" == "main" && "${{github.ref}}" == "refs/heads/main" ]]; then
+          echo "::set-output name=image-tag::qa"
+        fi
+
+        if [[ "${{inputs.image-tag}}" != " " ]]; then
+          echo "::set-output name=image-tag::${{ inputs.image-tag }}"
+        fi        
+        
     - uses: Azure/login@v1
       name: Login to Azure
       with:
@@ -50,7 +70,7 @@ jobs:
       id: azsecrets
       
     - name: Build the User Service Docker image
-      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.image-tag }}
       
     - uses: azure/docker-login@v1
       name: Login to ACR
@@ -60,4 +80,4 @@ jobs:
         password: ${{ steps.azsecrets.outputs[secrets.ACR_PWD_SCT] }}
     - name: Push to ACR
       run: |
-        docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+        docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.image-tag }}
