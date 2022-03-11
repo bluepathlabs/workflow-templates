@@ -1,0 +1,63 @@
+name: Build, Tag, and Push Image
+
+on:
+  workflow_call:
+    inputs:
+      dockerfile-path:
+        required: false
+        type: string
+        default: 'Dockerfile'
+      image-name:
+        required: true
+        type: string
+      image-tag:
+        required: true
+        type: string
+      azure-environment:
+        type: string
+        default: 'AzureCloud'
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+      KVT_NAME:
+        required: true
+      ACR_LOGIN_SVR_SCT:
+        required: true
+      ACR_USR_SCT:
+        required: true
+      ACR_PWD_SCT:
+        required: true
+
+jobs:
+
+  build-tag-push-image:
+    name: Build, Tag, and Push Image to ACR
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - uses: Azure/login@v1
+      name: Login to Azure
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        environment: ${{ inputs.azure-environment }}
+        
+    - uses: Azure/get-keyvault-secrets@v1
+      name: Get Required Azure Secrets
+      with:
+        keyvault: "${{ secrets.KVT_NAME }}" # name of key vault in Azure portal
+        secrets: '${{ secrets.ACR_LOGIN_SVR_SCT }}, ${{ secrets.ACR_USR_SCT }}, ${{ secrets.ACR_PWD_SCT }}'  # comma separated list of secret keys to fetch from key vault 
+      id: azsecrets
+      
+    - name: Build the User Service Docker image
+      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
+      
+    - uses: azure/docker-login@v1
+      name: Login to ACR
+      with:
+        login-server: ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}
+        username: ${{ steps.azsecrets.outputs[secrets.ACR_USR_SCT] }}
+        password: ${{ steps.azsecrets.outputs[secrets.ACR_PWD_SCT] }}
+    - name: Push to ACR
+      run: |
+        docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.imgae-tag }}
