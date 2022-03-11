@@ -60,4 +60,4 @@ jobs:
         password: ${{ steps.azsecrets.outputs[secrets.ACR_PWD_SCT] }}
     - name: Push to ACR
       run: |
-        docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.imgae-tag }}
+        docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ inputs.image-tag }}
