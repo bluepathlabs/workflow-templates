@@ -40,15 +40,15 @@ jobs:
     - name: Set Docker Tag Based on Input/Branch
       id: dockertagstep
       run: |
-        if [[ "${{github.base_ref}}" == "main" || "${{github.ref}}" == "refs/heads/main" ]]; then
+        if [[ "${{github.ref}}" == "refs/heads/main" ]]; then
           echo "::set-output name=image-tag::main"
         fi
 
-        if [[ "${{github.base_ref}}" == "develop" || "${{github.ref}}" == "refs/heads/develop" ]]; then
+        if [[ "${{github.ref}}" == "refs/heads/develop" ]]; then
           echo "::set-output name=image-tag::develop"
         fi
 
-        if [[ "${{github.base_ref}}" != "develop" && "${{github.ref}}" != "refs/heads/develop" && "${{github.base_ref}}" != "main" && "${{github.ref}}" != "refs/heads/main" ]]; then
+        if [[ "${{github.ref}}" != "refs/heads/develop" && "${{github.ref}}" != "refs/heads/main" ]]; then
           echo "::set-output name=image-tag::qa"
         fi
 
