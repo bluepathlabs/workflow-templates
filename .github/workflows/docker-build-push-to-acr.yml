@@ -48,7 +48,7 @@ jobs:
           echo "::set-output name=image-tag::develop"
         fi
 
-        if [[ "${{github.base_ref}}" != "develop" && "${{github.ref}}" != "refs/heads/develop" && "${{github.base_ref}}" == "main" && "${{github.ref}}" == "refs/heads/main" ]]; then
+        if [[ "${{github.base_ref}}" != "develop" && "${{github.ref}}" != "refs/heads/develop" && "${{github.base_ref}}" != "main" && "${{github.ref}}" != "refs/heads/main" ]]; then
           echo "::set-output name=image-tag::qa"
         fi
 
