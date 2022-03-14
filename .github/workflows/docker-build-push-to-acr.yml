@@ -28,6 +28,8 @@ on:
         required: true
       ACR_PWD_SCT:
         required: true
+      CUSTOM_BUILD_ARGS:
+        required: false
 
 jobs:
 
@@ -70,7 +72,7 @@ jobs:
       id: azsecrets
       
     - name: Build the User Service Docker image
-      run: docker build . --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.outputs.image-tag }}
+      run: docker build . ${{ secrets.CUSTOM_BUILD_ARGS }} --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.outputs.image-tag }}
       
     - uses: azure/docker-login@v1
       name: Login to ACR
