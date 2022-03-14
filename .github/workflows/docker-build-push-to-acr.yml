@@ -71,7 +71,7 @@ jobs:
         secrets: '${{ secrets.ACR_LOGIN_SVR_SCT }}, ${{ secrets.ACR_USR_SCT }}, ${{ secrets.ACR_PWD_SCT }}'  # comma separated list of secret keys to fetch from key vault 
       id: azsecrets
       
-    - name: Build the User Service Docker image
+    - name: Build the Docker image
       run: docker build . ${{ secrets.CUSTOM_BUILD_ARGS }} --file ${{ inputs.dockerfile-path }} --tag ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.outputs.image-tag }}
       
     - uses: azure/docker-login@v1
