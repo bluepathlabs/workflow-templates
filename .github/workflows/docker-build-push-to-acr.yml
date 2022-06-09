@@ -62,7 +62,7 @@ jobs:
       name: Login to Azure
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-        environment: ${{ inputs.azure-environment }}
+        environment: "AzureUSGovernment"
         
     - uses: Azure/get-keyvault-secrets@v1
       name: Get Required Azure Secrets
