@@ -72,6 +72,7 @@ jobs:
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         environment: "AzureUSGovernment"
+        enable-AzPSSession: false
         
     - uses: Azure/get-keyvault-secrets@v1
       name: Get Required Azure Secrets
