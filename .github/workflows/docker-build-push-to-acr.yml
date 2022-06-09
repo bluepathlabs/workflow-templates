@@ -67,7 +67,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install azure-cli
     
-    - uses: Azure/login@v1
+    - uses: Azure/login@v1.4.3
       name: Login to Azure
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
