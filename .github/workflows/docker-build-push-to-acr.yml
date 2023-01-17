@@ -50,11 +50,11 @@ jobs:
           echo "::set-output name=image-tag::develop"
         fi
 
-        if [[ "${{github.ref}}" != "refs/heads/develop" && "${{github.ref}}" != "refs/heads/main" ]]; then
-          echo "::set-output name=image-tag::staging"
-        fi
-        
         if [[ "${{github.ref}}" == "refs/heads/testing" ]]; then
+          echo "::set-output name=image-tag::develop"
+        fi
+
+        if [[ "${{github.ref}}" != "refs/heads/develop" && "${{github.ref}}" != "refs/heads/main" ]]; then
           echo "::set-output name=image-tag::develop"
         fi
 
