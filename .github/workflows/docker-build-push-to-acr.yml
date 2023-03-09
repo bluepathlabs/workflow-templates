@@ -50,10 +50,6 @@ jobs:
           echo "::set-output name=image-tag::develop"
         fi
 
-        if [[ "${{github.ref}}" == "refs/heads/testing" ]]; then
-          echo "::set-output name=image-tag::develop"
-        fi
-
         if [[ "${{github.ref}}" != "refs/heads/develop" && "${{github.ref}}" != "refs/heads/main" ]]; then
           echo "::set-output name=image-tag::develop"
         fi
@@ -88,3 +84,18 @@ jobs:
     - name: Push to ACR
       run: |
         docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.outputs.image-tag }}
+    # make a POST request to Ip from secrets that has a body of the image name and tag
+    - name: Auto Deploy to Webhook
+      run: |
+        curl -X POST -H "Content-Type: application/json" -H "x-api-key:${{ secrets.DEPLOYMENT_API_KEY }}" -d '{"service":"${{ inputs.image-name }}", "tag": "${{ steps.dockertagstep.outputs.image-tag }}"}' ${{ secrets.WEBHOOK_URL }}
+
+  deploy-to-webhook:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy Stage
+      uses: fjogeleit/http-request-action@v1
+      with:
+        url: '${{ secrets.WEBHOOK_URL }}'
+        method: 'POST'
+        customHeaders: '{ "x-api-key": "${{ secrets.DEPLOYMENT_API_KEY }}" }'
+        data: '{"service": "${{ inputs.image-name }}", "tag": "${{ steps.dockertagstep.outputs.image-tag }}"}'
