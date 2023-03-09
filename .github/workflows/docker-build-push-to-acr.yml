@@ -81,15 +81,12 @@ jobs:
         login-server: ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}
         username: ${{ steps.azsecrets.outputs[secrets.ACR_USR_SCT] }}
         password: ${{ steps.azsecrets.outputs[secrets.ACR_PWD_SCT] }}
+
     - name: Push to ACR
       run: |
         docker push ${{ steps.azsecrets.outputs[secrets.ACR_LOGIN_SVR_SCT] }}/${{ inputs.image-name }}:${{ steps.dockertagstep.outputs.image-tag }}
-    # make a POST request to Ip from secrets that has a body of the image name and tag
-    - name: Auto Deploy to Webhook
-      run: |
-        curl -X POST -H "Content-Type: application/json" -H "x-api-key:${{ secrets.DEPLOYMENT_API_KEY }}" -d '{"service":"${{ inputs.image-name }}", "tag": "${{ steps.dockertagstep.outputs.image-tag }}"}' ${{ secrets.WEBHOOK_URL }}
 
-    - name: Deploy Stage
+    - name: Deploy to Azure VM
       uses: fjogeleit/http-request-action@v1
       with:
         url: '${{ secrets.WEBHOOK_URL }}'
