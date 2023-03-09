@@ -89,9 +89,6 @@ jobs:
       run: |
         curl -X POST -H "Content-Type: application/json" -H "x-api-key:${{ secrets.DEPLOYMENT_API_KEY }}" -d '{"service":"${{ inputs.image-name }}", "tag": "${{ steps.dockertagstep.outputs.image-tag }}"}' ${{ secrets.WEBHOOK_URL }}
 
-  deploy-to-webhook:
-    runs-on: ubuntu-latest
-    steps:
     - name: Deploy Stage
       uses: fjogeleit/http-request-action@v1
       with:
