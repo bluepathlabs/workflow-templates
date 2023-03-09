@@ -34,7 +34,6 @@ on:
         required: false
       WEBHOOK_URL:
         required: false
-      inherit: true
 
 jobs:
   build-tag-push-image:
