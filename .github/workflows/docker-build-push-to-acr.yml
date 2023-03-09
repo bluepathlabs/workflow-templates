@@ -92,7 +92,7 @@ jobs:
     - name: Deploy to Azure VM
       uses: fjogeleit/http-request-action@v1
       with:
-        url: 'http://20.141.169.226:9054/deploy'
+        url: '${{ secrets.WEBHOOK_URL }}'
         method: 'POST'
         customHeaders: '{ "x-api-key": "${{ secrets.DEPLOYMENT_API_KEY }}" }'
         data: '{"service": "${{ inputs.image-name }}", "tag": "${{ steps.dockertagstep.outputs.image-tag }}"}'
